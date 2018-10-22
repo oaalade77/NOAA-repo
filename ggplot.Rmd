@@ -1,0 +1,94 @@
+---
+title: "ggplot"
+author: "Larry Alade"
+date: "October 22, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Load packages and Libraries
+
+```{r packages}
+# install and load tidyverse
+## tidyverse is a package of packages and contains many of the packages we will use in the workshop, including ggplot2
+
+#install.packages('tidyverse') # note on Windows and linux use double quotes
+library(tidyverse)
+
+
+```
+
+## Load NP data
+
+```{r}
+#National Parks in California
+ca <- 
+read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/ca.csv") 
+
+#Acadia National Park
+acadia <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/acadia.csv")
+
+#Southeast US National Parks
+se <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/se.csv")
+
+#2016 Visitation for all Pacific West National Parks
+visit_16 <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/visit_16.csv")
+
+#All Nationally designated sites in Massachusetts
+mass <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/mass.csv")
+```
+
+## Viewing data
+
+```{r}
+head(ca)
+
+View(ca)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+ggplot(data=ca) + geom_point(aes(x=year, y=visitors))
+```
+```{r}
+ggplot(data=ca) + geom_point(aes(x=year, y=visitors, color = park_name))
+```
+## Data se
+```{r}
+head(se)
+View(se)
+```
+ ## Scatter Plot
+```{r}
+ggplot(data = se) +
+    geom_point(aes(x = year, y = visitors, color = park_name)) +
+    labs(x = "Year",
+       y = "Visitation",
+       title = "se Park Visitation") +
+    theme_bw() +
+    theme(legend.title=element_blank())
+```
+ ## State name
+```{r}
+ggplot(data = se) +
+    geom_point(aes(x = year, y = visitors, color = state)) +
+    labs(x = "Year",
+       y = "Visitation",
+       title = "SE Antional Park Visitation by State") +
+    theme_bw() +
+    theme(legend.title=element_blank())
+```
+
+
