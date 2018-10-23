@@ -96,10 +96,6 @@ filter(country %in% c("Vietnam", "Egypt")) %>%
   mutate (gdp = pop * gdpPercap,
           max_gdp = max(gdp))
 
-          
-
-
-
 ```
 
 
