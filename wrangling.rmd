@@ -98,6 +98,200 @@ filter(country %in% c("Vietnam", "Egypt")) %>%
 
 ```
 
+## group_by()
+```{r}
+## with mutate()
+gap_grouped <- gapminder %>% 
+  group_by(country) %>% 
+  mutate(gdp = pop * gdpPercap,
+         max_gdp = max(gdp)) %>% 
+ungroup()
+View(gap_grouped)
+
+
+## With sumarised ()
+gap_sumarized <-gapminder %>% 
+  group_by(country) %>% 
+  mutate (gdp = pop*gdpPercap) %>% 
+  sumarize(max_gdp = max(gdp)) %>% 
+  ungroup() %>% 
+View(gap_sumarized)
+
+
+
+```
+
+## Joins 
+```{r}
+co2 <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/co2.csv")
+View(co2)
+names(co2)
+
+co2 %>% head()
+co2 %>% dim() # 12
+
+## create new variable that is only 2007 data
+
+gap_2007 <- gapminder %>%
+  filter(year == 2007) 
+gap_2007 %>% dim()
+
+## left_join gap_2007 to co2
+lj <- left_join(gap_2007, co2, by="country")
+View(lj)
+
+# another way to do this
+lj <- gap_2007 %>% 
+  left_join(co2, by = "country")
+
+# the same as (note column sequence changes; error prone if analyses are based on column positioning)
+lj2 <- left_join(co2, gap_2007, by = "country")
+
+## right_join gap_2007 and co2
+rj <- right_join(gap_2007, co2, by = "country")
+
+
+```
+
+## tidyverse
+
+```{r}
+
+library(tidyverse)
+## gapminder data in a wide format
+gap_wide <- readr::read_csv('https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/gapminder_wide.csv')
+
+gap_wide %>% head()
+View(gap_wide)
+names(gap_wide)
+
+```
+
+
+##tidyr::gather()
+```{r}
+?gather
+gap_long <- gap_wide %>% 
+  gather(key   = obstype_year,
+         value = obs_values,
+         -continent, -country)
+
+View(gap_long)
+```
+
+
+## tidyr::separate()
+```{r}
+gap_long <- gap_wide %>% 
+  gather(key   = obstype_year,
+         value = obs_values,
+         -continent, -country) %>% 
+separate(col = obstype_year,
+         into = c("obs_type","year"),
+         sep = "_", 
+         convert = TRUE)
+str(gap_long)
+View(gap_long)
+```
+
+## plot long data
+```{r}
+canada_df <- gap_long %>% 
+  filter(country == "Canada",
+         obs_type == "lifeExp")
+
+ggplot(data = canada_df, aes(x = year, y = obs_values))+ 
+  geom_line() + 
+  geom_smooth(span = 0.3)
+
+```
+
+plot the life expectancy of allcountries in the Americas
+
+```{r}
+life_df <- gap_long %>% 
+  filter(obs_type =="lifeExp",
+         continent == "Americas")
+
+ggplot(data=life_df, aes(x = year, y=obs_values, color = country))+
+  geom_line()
+
+```
+
+## Using gap_long, calculate and plot the the mean life expectancy for each continent over time from 1982 to 2007. Give your plot a title and assign x and y labels. Hint: use the dplyr::group_by() and dplyr::summarize() functions.
+
+```{r}
+continents <- gap_long %>% 
+  filter(obs_type == "lifeExp", 
+         year %in% 1980:2005) %>% 
+  group_by(continent, year) %>% 
+  summarize(mean_le = mean(obs_values))
+View(continents)
+
+ggplot(data = continents, aes(x = year, y = mean_le, color = continent)) + 
+  geom_line() +
+  labs(title = "Mean life expectancy",
+       x = "Year",
+       y = "Age (years)") 
+
+## Additional customization
+ggplot(data = continents, aes(x = year, y = mean_le, color = continent)) + 
+  geom_line() +
+  labs(title = "Mean life expectancy",
+       x = "Year",
+       y = "Age (years)",
+       color = "Continent") +
+  theme_classic() +
+  scale_fill_brewer(palette = "Blues") 
+  
+
+```
+
+## Exercise (Spread the data)
+
+```{r}
+head(gap_long) # remember the columns
+
+gap_wide_new <- gap_long %>% 
+  # first unite obs_type and year into a new column called var_names. Separate by _
+  unite(col = var_names, obs_type, year, sep = "_") %>% 
+  # then spread var_names out by key-value pair.
+  spread(key = var_names, value = obs_values)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
